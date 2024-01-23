@@ -1,75 +1,77 @@
-from typing import Dict, List, Tuple
-from collections import deque
-# A class to represent a graph object
-class Graph:
+from typing import Dict, List
+class Grafo:
 	# Constructor
-	def __init__(self, edges : Dict[int, List[int]], numero_total_vertices : int):
-
+	def __init__(self, aristas : Dict[int, List[int]], total : int):
 		self.lista_adyacencia : Dict[int, List[int]] = dict()
+		
+		# recorre todas las aristas, guardando el nodo inicial y el destino en una tupla
+		for (src, end) in aristas:
 
-		# A list of lists to represent an adjacency list as a dict
-		for (src, end) in edges:
+			# si no se encuentra el nodo inicial
 			if not src in self.lista_adyacencia.keys():
 				self.lista_adyacencia.update({ src : list() })
-			
+
+			# si no se encuentra el nodo inicial (final, ya que es un grafo no dirigido)
 			if not end in self.lista_adyacencia.keys():
 				self.lista_adyacencia.update( {end : list()} )
 
+			# cada nodo (key) tiene una lista (value) de nodos adyacentes:
+
+			# se anade a la lista de nodos adyacentes
 			self.lista_adyacencia.get(src).append(end)
 			self.lista_adyacencia.get(end).append(src)
 
-		self.total_vertices = numero_total_vertices
+		self.total_vertices = total
 
-# Perform BFS on the graph starting from vertex `v`
-def BFS(graph : Graph, inicial : int, descubiertos : list[int]):
 
-	# create a queue for doing BFS
-	q = deque()
+def DFS(grafo : Grafo, inicial : int, descubiertos : list[int]):
+	# crea una lista para simular una PILA
+	q = list()
 
-	# mark the source vertex as discovered
-	discovered.append(inicial)
+	# anade el nodo inicial como descubierto
+	descubiertos.append(inicial)
 	
-	# enqueue source vertex
+	# apila el primer elemento
 	q.append(inicial)
 
-	# loop till queue is empty
+	# se ejecuta mientras la pila no este vacia
 	while len(q) != 0:
 
-		# dequeue front node and print it
-		nodo = q.pop()
+		# saca el nodo de la pila
+		nodo = q.pop(-1)
 
 		print(nodo, end='-')
 
-		if not nodo in graph.lista_adyacencia.keys():
+		# si el nodo no tiene hijos, entonces salta hacia el siguiente ciclo, para no generar una excepcion
+		if not nodo in grafo.lista_adyacencia.keys():
 			continue
 
-		# do for every edge (v, u)
-		for u in graph.lista_adyacencia.get(nodo):
-			if not u in discovered:
-				# mark it as discovered and enqueue it
-				discovered.append(u)
-				q.append(u)
+		# para cada arista (u, v)
+		for u in grafo.lista_adyacencia.get(nodo):
 
+			# si u no ha sido descubierto
+			if not u in descubiertos:
+				
+				#se apila y agrega a la lista de descubiertos
+				descubiertos.append(u)
+				q.append(u)
+		
 
 if __name__ == '__main__':
-
-	#dddd
-	edges = [
-		(1, 2), (1, 7), (1, 8), (2, 3), (2, 6), (3, 4), (3, 5), (8, 9), (8, 12), (9, 10), (9, 11)
+	# aristas entre nodos
+	aristas = [
+		(1,2), (1,3), (2, 4), (2, 5), (3, 6), (3, 7), (5, 8)
 	]
 
-	# total number of nodes in the graph (labelled from 0 to 14)
-	n = 15
+	# numero total de nodos
+	n = 8
 
-	# build a graph from the given edges
-	graph = Graph(edges, n)
+	# instancia de grafo con la lista de aristas y total de nodos
+	grafo = Grafo(aristas, n)
 
-	#print(graph.lista_adyacencia)
-
-	# to keep track of whether a vertex is discovered or not
-	discovered = list()
-
-	# Perform BFS traversal from all undiscovered nodes to
-	# cover all connected components of a graph
-	#for i in range(n):
-	BFS(graph=graph, inicial=3, descubiertos=discovered)
+	# realiza el algoritmo DFS para todos los nodos en n
+	# range(1, n+1) para recorrer a partir de 1 y finalizar en n+1, ya que range no es inclusiva
+	# en el extremo superior
+	for i in range(1, n+1):
+		DFS(grafo=grafo, inicial=i, descubiertos=list())
+		print("\n")
